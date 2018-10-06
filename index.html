@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Contact V16</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+<!--===============================================================================================-->
+</head>
+<body>
+
+
+	<div class="container-contact100">
+		<div class="wrap-contact100" id="content">
+
+			<div class="contact100-form-title" style="background-image: url(images/bg-02.jpg);">
+				<span>Simulador de Comedor</span>
+			</div>
+
+			<form class="contact100-form validate-form">
+				<label>Numero de mesas: </label><br>
+				<div class="wrap-input100 validate-input">
+					<input class="input100" type="number"  name="nroMesas" id="nroMesas" placeholder="Numero de mesas">
+					<span class="focus-input100"></span>
+
+				</div>
+
+				<label>Capacidad de las mesas: </label><br>
+				<div class="wrap-input100 validate-input">
+					<input  class="input100" type="number"  name="capMesas" id="capMesas" placeholder="Capacidad">
+					<span class="focus-input100"></span>
+
+				</div>
+
+
+				<div class="container-contact100-form-btn">
+					<button onclick="simular(); return false;" class="contact100-form-btn">
+						Simular !
+					</button>
+				</div>
+			</form>
+		</div>
+		<div class="wrap-contact100" id="content2" style="display: none;">
+			<div class="contact100-form-title" style="background-image: url(images/bg-02.jpg);">
+				<span>Resultados de la Simulación</span>
+			</div>
+			<br>
+			<div style="margin-left: 30px">
+				<label><strong>Numero de mesas: </strong><span id="spanNroMesas"></span></label><br>
+				<label><strong>Capacidad de las mesas: </strong><span id="spanCapMesas"></span></label><br>
+				<label><strong>Tiempo real de finalizacion: </strong><span id="spanTiempoFinalizacion"></span></label><br>
+				<label><strong>Tiempo esperado de finalizacion: </strong><span id="spanTiempoEsperadoFinalizacion"></span></label><br>
+			</div>
+		</div>
+	</div>
+
+
+
+<!--===============================================================================================-->
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="js/simular.js"></script>
+
+<!--===============================================================================================-->
+	<script src="js/validations.js"></script>
+
+</body>
+</html>
