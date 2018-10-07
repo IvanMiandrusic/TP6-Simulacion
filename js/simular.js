@@ -39,12 +39,12 @@ function simular(){
             stll += tpll;
             nroTotalGenteEnElSistema+=1;
             totalArribos += 1;
+            intervaloArribos = generateIA();
+            tpll = tiempo + intervaloArribos;
             if(nroTotalGenteEnElSistema>=nroMesas*capMesas) {
                 var randomDecicion = Math.random();
                 if(randomDecicion > 0.1){
                     arrepentidos += 1;
-                    intervaloArribos = generateIA();
-                    tpll = tiempo + intervaloArribos;
                 }else{
                     seQueda();
                 }
@@ -82,16 +82,11 @@ function simular(){
         }
     }
 
-
     function seQueda(){
-        intervaloArribos = generateIA();
-        tpll = tiempo + intervaloArribos;
         var mesaWithMNP = getMesaWithASlot();
         var mesa = arrMesas[mesaWithMNP['nroMesa']];
         if(mesaWithMNP['nroPersonasEnLaMesa'] <= capMesas){
             addTEaUnaMesa(mesa, mesaWithMNP['nroMesa']);
-        }else{
-            //TODO
         }
     }
 
@@ -146,7 +141,6 @@ function simular(){
     }
 
     function calcularResultados(){
-        //TODO: MOSTRAR RESULTADOS
         $('#content').hide();
 
         $('#spanNroMesas').text(nroMesas);
@@ -165,7 +159,6 @@ function simular(){
                             '</div>'+
                             '</div><br>';
 
-            //var itemMesa = '<li class="list-group-item">Mesa '+(i+1)+':   <strong>'+promedioUso+'%</strong></li>';
             $('#toMesas').append(itemMesa);
         }
         $('#content2').show();
