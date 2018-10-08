@@ -53,7 +53,7 @@ function simular(){
         }else{
             tiempo = tps;
             var mesa = arrMesas[mesaProxASalir];
-            if(mesa['nroPersonasEnLaMesa']>0 && mesa['personas'].length>0) {
+            if(mesa['nroPersonasEnLaMesa']>0 && (Object.keys(mesa).length +1) > 0) {
                 mesa['nroPersonasEnLaMesa'] -= 1;
                 nroTotalGenteEnElSistema -= 1;
                 sts += tps;
@@ -64,30 +64,21 @@ function simular(){
             }
             if(nroTotalGenteEnElSistema >= (nroMesas*capMesas)){
                 addTEaUnaMesa(mesa, mesaProxASalir);
-            }else{
-                if(nroTotalGenteEnElSistema === 0){
-                    tps = 100000000000000000000000000;
-                }
             }
+            getMinTPS();
         }
-
-        if(tiempo<tiempoFinal && tpll<tiempoFinal){
-            var minTPS = getMinTPS();
-            tps = minTPS['tpsMesa'];
-            mesaProxASalir = minTPS['nroMesa'];
-            procesarInformacion();
-        }else{
+        if(tiempo>tiempoFinal){
             if(nroTotalGenteEnElSistema==0){
                 calcularResultados();
+                return false;
             }else{
                 tpll = 10000000000000000000000000000000000000000;
-                minTPS = getMinTPS();
-                tps = minTPS['tpsMesa'];
-                mesaProxASalir = minTPS['nroMesa'];
-                procesarInformacion();
             }
         }
+        procesarInformacion();
     }
+
+
 
     function seQueda(){
         if(tpll<tiempoFinal){
@@ -99,8 +90,8 @@ function simular(){
         if(Object.keys(mesaWithMNP).length !== 0 ){
             var mesa = arrMesas[mesaWithMNP['nroMesa']];
             //if(mesaWithMNP['nroPersonasEnLaMesa'] <= capMesas){
-                addTEaUnaMesa(mesa, mesaWithMNP['nroMesa']);
-
+            addTEaUnaMesa(mesa, mesaWithMNP['nroMesa']);
+            getMinTPS();
             //}
         }
     }
@@ -115,7 +106,6 @@ function simular(){
             if(mesa['nroPersonasEnLaMesa']===capMesas){
                 tiempoOsciosoMesas[nroMesa]['tiempoTotalOscio']+=tiempo - tiempoOsciosoMesas[nroMesa]['inicioOscio'];
                 tiempoOsciosoMesas[nroMesa]['inicioOscio']=0;
-                console.log('asdasdasdasd'+tiempoOsciosoMesas[nroMesa]['tiempoTotalOscio']);
             }
             arrMesas[nroMesa] = mesa;
         }
@@ -125,7 +115,11 @@ function simular(){
         var alfa = 0.47576;
         var beta = 1.752;
         var random = Math.random();
-        return parseInt(((beta/(Math.pow(1-random, (1/alfa)))))-beta);
+        var rta = Math.floor(((beta/(Math.pow(1-random, (1/alfa)))))-beta);
+        if(rta>tiempoFinal){
+            rta =  generateIA();
+        }
+        return rta;
 
     }
 
@@ -134,7 +128,7 @@ function simular(){
         var beta = 11683;
         var k =87.364;
         var random = Math.random();
-        return parseInt((Math.pow((Math.pow(1-random, (-(1/k))))-1, 1/alfa))*beta);
+        return Math.floor((Math.pow((Math.pow(1-random, (-(1/k))))-1, 1/alfa))*beta);
     }
 
     function getMesaWithASlot(){
@@ -160,7 +154,8 @@ function simular(){
                 responseTPS = {'tpsMesa':minTPS, 'nroMesa':i};
                 }
         }
-        return responseTPS;
+        tps = responseTPS['tpsMesa'];
+        mesaProxASalir = responseTPS['nroMesa'];
     }
 
     function calcularResultados(){
@@ -182,7 +177,6 @@ function simular(){
                 tiempoOsciosoMesas[i]['tiempoTotalOscio']+=tiempo - tiempoOsciosoMesas[i]['inicioOscio'];
             }
             var promedioOscioMesas = parseInt(100-((tiempoOsciosoMesas[i]['tiempoTotalOscio']/tiempo)*100));
-            console.log('tiempo de oscio mesa: '+i+' - '+promedioOscioMesas);
             var itemMesa =  '<label style="margin: 0 10px 10px 0">Mesa '+(i+1)+' - Total: '+arrMesas[i]["totalPersonas"]+'</label>'+
                             '<div class="progress">'+'<label style="margin: 0 10px 10px 0">Uso:</label>'+
                             '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="'+promedioUso+'" aria-valuemin="0" aria-valuemax="100" style="width:'+promedioUso+'%">'+
@@ -211,7 +205,7 @@ function simular(){
         intervaloArribos = 0;
         tiempoEstadia = 0;
         tiempo = 0; //Tiempos en segundos
-        tiempoFinal = 7200;
+        tiempoFinal = 259200;
         arrepentidos = 0;
         tiempoOsciosoTotal = 0;
         nroMesas= parseInt($('#nroMesas').val());
