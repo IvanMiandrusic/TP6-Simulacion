@@ -28,6 +28,13 @@ var tiempoOsciosoMesas = [];
 var controlRandomMesas =[];
 var mesaProxASalir = 0;
 
+//Variables para varias simulaciones simultaneas
+var totArrepentidos = 0;
+var totArribos = 0;
+var totTiempo = 0;
+var nroSimulaciones = 5;
+var totPromOscioso = [];
+
 function simular(){
 
     inicializarVariables();
@@ -58,7 +65,7 @@ function simular(){
                 nroTotalGenteEnElSistema -= 1;
                 sts += tps;
                 mesa['personas'].shift();
-                if(mesa['personas'].length<capMesas && tiempoOsciosoMesas[mesaProxASalir]['inicioOscio']===0){
+                if(mesa['personas'].length<capMesas && tiempoOsciosoMesas[mesaProxASalir]['inicioOscio']===-1){
                     tiempoOsciosoMesas[mesaProxASalir]['inicioOscio']=tiempo;
                 }
             }
@@ -89,10 +96,9 @@ function simular(){
         nroTotalGenteEnElSistema += 1;
         if(Object.keys(mesaWithMNP).length !== 0 ){
             var mesa = arrMesas[mesaWithMNP['nroMesa']];
-            //if(mesaWithMNP['nroPersonasEnLaMesa'] <= capMesas){
             addTEaUnaMesa(mesa, mesaWithMNP['nroMesa']);
             getMinTPS();
-            //}
+
         }
     }
 
@@ -105,7 +111,7 @@ function simular(){
             mesa['totalPersonas']+=1;
             if(mesa['nroPersonasEnLaMesa']===capMesas){
                 tiempoOsciosoMesas[nroMesa]['tiempoTotalOscio']+=tiempo - tiempoOsciosoMesas[nroMesa]['inicioOscio'];
-                tiempoOsciosoMesas[nroMesa]['inicioOscio']=0;
+                tiempoOsciosoMesas[nroMesa]['inicioOscio']=-1;
             }
             arrMesas[nroMesa] = mesa;
         }
@@ -169,6 +175,7 @@ function simular(){
         $('#spanTotArribos').text(totalArribos);
         $('#spanPorcArrepentidos').text(parseInt((arrepentidos/totalArribos)*100));
         $('#spanPPS').text(parseInt((sts-stll)/(totalArribos-arrepentidos)));
+
         for(var i=0; i<arrMesas.length;i++){
             var promedioUso = parseInt((arrMesas[i]['totalPersonas']/totalArribos)*100);
 
@@ -189,9 +196,11 @@ function simular(){
                               promedioOscioMesas+'% '+
                               '</div></div><br>';
             toMesas = $('#toMesas');
-
             toMesas.append(itemMesa);
             toMesas.append(porcOscioso);
+
+            //totPromOscioso[i] += promedioOscioMesas;
+
         }
         $('#content2').show();
     }
@@ -213,16 +222,15 @@ function simular(){
         controlRandomMesas =new Array(nroMesas);
         tiempoOsciosoMesas =new Array(nroMesas);
         arrMesas = new Array(nroMesas);
+        totPromOscioso = new Array(nroMesas);
         totalArribos = 0;
         mesaProxASalir = 0;
         $('#toMesas').empty();
         //Cargo mesas
         for(var i=0; i<arrMesas.length ;i++){
             arrMesas[i] = {'personas':[],'nroPersonasEnLaMesa':0, 'totalPersonas': 0};
-        }
-        //Cargo oscioso
-        for(i=0; i<arrMesas.length ;i++){
             tiempoOsciosoMesas[i] = {'inicioOscio':-1,'tiempoTotalOscio':0, 'lugaresLibres': 0};
+            totPromOscioso[i] = 0;
         }
     }
 
@@ -230,8 +238,52 @@ function simular(){
         return (Math.floor(Math.random() * nroDeMesas));
     }
 
-
+    //
+    //function calcularResultadosFor(){
+    //    $('#content').hide();
+    //    var cantArrep = Math.floor(totArrepentidos/nroSimulaciones);
+    //    var cantArrib = Math.floor(totArribos/nroSimulaciones);
+    //    var cantTiempo = Math.floor(totTiempo/nroSimulaciones);
+    //
+    //    $('#spanNroMesas').text(nroMesas);
+    //    $('#spanCapMesas').text(capMesas);
+    //    $('#spanTiempoFinalizacion').text(cantTiempo);
+    //    $('#spanTiempoEsperadoFinalizacion').text(tiempoFinal);
+    //    $('#spanCantArrepentidos').text(cantArrep);
+    //    $('#spanTotArribos').text(cantArrib);
+    //    $('#spanPorcArrepentidos').text(parseInt((cantArrep/cantArrib)*100));
+    //    $('#spanPPS').text(parseInt((sts-stll)/(cantArrib-cantArrep)));
+    //    console.log(totArribos);
+    //    for(var i=0; i<arrMesas.length;i++){
+    //        var promedioUso = parseInt((arrMesas[i]['totalPersonas']/totArribos)*100);
+    //
+    //        var promedioOscioMesas = parseInt(totPromOscioso[i]/nroSimulaciones);
+    //
+    //        var itemMesa =  '<label style="margin: 0 10px 10px 0">Mesa '+(i+1)+' - Total: '+(arrMesas[i]["totalPersonas"]/nroSimulaciones)+'</label>'+
+    //            '<div class="progress">'+'<label style="margin: 0 10px 10px 0">Uso:</label>'+
+    //            '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="'+promedioUso+'" aria-valuemin="0" aria-valuemax="100" style="width:'+promedioUso+'%">'+
+    //            promedioUso+'% '+
+    //            '</div>'+
+    //            '</div><br>';
+    //
+    //        var porcOscioso = '<div class="progress">'+'<label style="margin: 0 10px 10px 0">Ocupada:</label>'+
+    //            '<div class="progress-bar progress-bar-striped bg-warning" role="progressbar" aria-valuenow="'+promedioOscioMesas+'" aria-valuemin="0" aria-valuemax="100" style="width:'+promedioOscioMesas+'%">'+
+    //            promedioOscioMesas+'% '+
+    //            '</div></div><br>';
+    //
+    //        toMesas = $('#toMesas');
+    //
+    //        toMesas.append(itemMesa);
+    //        toMesas.append(porcOscioso);
+    //    }
+    //    $('#content2').show();
+    //}
+    //
     //function restartVariables(){
+    //    totArrepentidos += arrepentidos;
+    //    totArribos += totalArribos;
+    //    totTiempo += tiempo;
+    //
     //    tpll = 0;
     //    tps = 0;
     //    intervaloArribos = 0;
@@ -239,9 +291,11 @@ function simular(){
     //    tiempo = 0; //Tiempos en segundos
     //    tiempoFinal = 7200;
     //    controlRandomMesas =new Array(nroMesas);
-    //    arrMesas = new Array(nroMesas);
+    //    //arrMesas = new Array(nroMesas);
     //    for(var i=0; i<arrMesas.length ;i++){
-    //        arrMesas[i] = {'personas':[],'nroPersonasEnLaMesa':0, 'totalPersonas': 0};
+    //        arrMesas[i]['personas']=[];
+    //        arrMesas[i]['nroPersonasEnLaMesa']=0;
+    //        tiempoOsciosoMesas[i] = {'inicioOscio':-1,'tiempoTotalOscio':0, 'lugaresLibres': 0};
     //    }
     //    mesaProxASalir = 0;
     //}
